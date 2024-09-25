@@ -25,12 +25,12 @@ public class OrganizationController {
     }
     @DeleteMapping("{code}")
     public ResponseEntity<OrganizationDto> deleteOrganization(@PathVariable("code") String organizationCode) throws Exception{
-        OrganizationDto organizationDto = organizationService.deleteOrganizationByCode(organizationCode);
-        return ResponseEntity.ok(organizationDto);
+        OrganizationDto deletedOrganization = organizationService.deleteOrganizationByCode(organizationCode);
+        return ResponseEntity.ok(deletedOrganization);
     }
     @PutMapping("{code}")
     public ResponseEntity<OrganizationDto> updateOrganization(@PathVariable("code") String organizationCode,@RequestBody OrganizationDto organizationDto) throws Exception{
-        OrganizationDto savedOrganization = organizationService.updateOrganizationByCode(organizationCode,organizationDto);
-        return new ResponseEntity<>(savedOrganization, HttpStatus.CREATED);
+        OrganizationDto updatedOrganization = organizationService.updateOrganizationByCode(organizationCode,organizationDto);
+        return new ResponseEntity<>(updatedOrganization, HttpStatus.CREATED);
     }
 }
