@@ -21,6 +21,16 @@ public class EmployeeController {
         EmployeeDto savedEmployee = employeeService.saveEmployee(employeeDto);
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
+    @PutMapping("{id}")
+    public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable("id") Long employeeId,@RequestBody EmployeeDto employeeDto) throws Exception{
+        EmployeeDto updatedEmployee = employeeService.updateEmployeeById(employeeId,employeeDto);
+        return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
+    }
+    @GetMapping("{id}")
+    public ResponseEntity<EmployeeDto> deleteEmployee(@PathVariable("id") Long employeeId) throws Exception{
+        EmployeeDto deletedEmployee = employeeService.deleteEmployeeById(employeeId);
+        return new ResponseEntity<>(deletedEmployee, HttpStatus.OK);
+    }
 
     // Build Get Employee REST API
     @GetMapping("{id}")

@@ -20,10 +20,22 @@ public class DepartmentController {
         DepartmentDto savedDepartment = departmentService.saveDepartment(departmentDto);
         return new ResponseEntity<>(savedDepartment, HttpStatus.CREATED);
     }
+    // Build put department rest api
+    @PutMapping("{code}")
+    public ResponseEntity<DepartmentDto> updateDepartment(@PathVariable("code") String departmentCode,@RequestBody DepartmentDto departmentDto) throws Exception{
+        DepartmentDto updatedDepartment = departmentService.updateDepartment(departmentCode,departmentDto);
+        return new ResponseEntity<>(updatedDepartment, HttpStatus.OK);
+    }
+    // Build delete department rest api
+    @DeleteMapping("{code}")
+    public ResponseEntity<DepartmentDto> deleteDepartment(@PathVariable("code") String departmentCode) throws Exception{
+        DepartmentDto deletedDepartment = departmentService.deleteDepartmentByCode(departmentCode);
+        return new ResponseEntity<>(deletedDepartment, HttpStatus.OK);
+    }
 
     // Build get department rest api
-    @GetMapping("{department-code}")
-    public ResponseEntity<DepartmentDto> getDepartment(@PathVariable("department-code") String departmentCode){
+    @GetMapping("{code}")
+    public ResponseEntity<DepartmentDto> getDepartment(@PathVariable("code") String departmentCode) throws Exception{
         DepartmentDto departmentDto = departmentService.getDepartmentByCode(departmentCode);
         return new ResponseEntity<>(departmentDto, HttpStatus.OK);
     }

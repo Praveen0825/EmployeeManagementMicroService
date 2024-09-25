@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import com.microserviespraveeen.employeeService.dto.APIResponseDto;
 import com.microserviespraveeen.employeeService.dto.DepartmentDto;
 import com.microserviespraveeen.employeeService.dto.EmployeeDto;
-import com.microserviespraveeen.employeeService.dto.OrganizationDto;
+import com.microserviespraveeen.employeeService.dto.EmployeeDto;
 import com.microserviespraveeen.employeeService.entity.Employee;
 import com.microserviespraveeen.employeeService.mapper.EmployeeMapper;
 import com.microserviespraveeen.employeeService.repository.EmployeeRepository;
@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -38,9 +40,38 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee saveDEmployee = employeeRepository.save(employee);
 
-        EmployeeDto savedEmployeeDto = EmployeeMapper.mapToEmployeeDto(saveDEmployee);
+        return EmployeeMapper.mapToEmployeeDto(saveDEmployee);
+    }
+    @Override
+    public EmployeeDto deleteEmployeeById(Long employeeId) throws Exception{
+        Optional<Employee> employeeOpt= employeeRepository.findById(employeeId);
+        if (!employeeOpt.isPresent()) {
+            throw new Exception("Employee does not exist");
+        }
 
-        return savedEmployeeDto;
+        employeeRepository.deleteById(employeeId);
+
+        return EmployeeMapper.mapToEmployeeDto(employeeOpt.get());
+    }
+    @Override
+    public EmployeeDto updateEmployeeById(Long employeeId,EmployeeDto EmployeeDto) throws Exception{
+        // convert Employee dto to Employee jpa entity
+        Employee employee = EmployeeMapper.mapToEmployee(EmployeeDto);
+        Optional<Employee> employeeOpt= employeeRepository.findById(employeeId);
+        if (!employeeOpt.isPresent()) {
+            throw new Exception("Employee does not exist");
+        }
+        Employee employeeDB=employeeOpt.get();
+
+        employeeDB.setFirstName(employee.getFirstName());
+        employeeDB.setLastName(employee.getLastName());
+        employeeDB.setEmail(employee.getEmail());
+        employeeDB.setDepartmentCode(employee.getDepartmentCode());
+        employeeDB.setOrganizationCode(employee.getOrganizationCode());
+
+        Employee savedEmployee = employeeRepository.save(employeeDB);
+
+        return EmployeeMapper.mapToEmployeeDto(savedEmployee);
     }
 
     //@CircuitBreaker(name = "${spring.application.name}", fallbackMethod = "getDefaultDepartment")
@@ -64,10 +95,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
       //  DepartmentDto departmentDto = apiClient.getDepartment(employee.getDepartmentCode());
 
-        OrganizationDto organizationDto = webClient.get()
-                .uri("http://localhost:8084/api/organizations/" + employee.getOrganizationCode())
+        EmployeeDto EmployeeDto = webClient.get()
+                .uri("http://localhost:8084/api/Employees/" + employee.getDepartmentCode())
                 .retrieve()
-                .bodyToMono(OrganizationDto.class)
+                .bodyToMono(EmployeeDto.class)
                 .block();
 
         EmployeeDto employeeDto = EmployeeMapper.mapToEmployeeDto(employee);
@@ -75,7 +106,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         APIResponseDto apiResponseDto = new APIResponseDto();
         apiResponseDto.setEmployee(employeeDto);
         apiResponseDto.setDepartment(departmentDto);
-        apiResponseDto.setOrganization(organizationDto);
+        apiResponseDto.setEmployee(EmployeeDto);
         return apiResponseDto;
     }
 

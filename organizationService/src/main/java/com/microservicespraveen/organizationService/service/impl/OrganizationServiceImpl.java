@@ -19,8 +19,37 @@ public class OrganizationServiceImpl implements OrganizationService {
         return OrganizationMapper.mapToOrganizationDto(savedOrganization);
     }
    @Override
-    public OrganizationDto getOrganizationByCode(String organizationCode){
+    public OrganizationDto getOrganizationByCode(String organizationCode) throws Exception{
         Organization organization = organizationRepository.findByOrganizationCode(organizationCode);
+       if (organization == null) {
+           throw new Exception("Organization does not exist");
+       }
         return OrganizationMapper.mapToOrganizationDto(organization);
+    }
+    @Override
+    public OrganizationDto deleteOrganizationByCode(String organizationCode) throws Exception{
+        Organization organization = organizationRepository.findByOrganizationCode(organizationCode);
+        if (organization == null) {
+            throw new Exception("Organization does not exist");
+        }
+        organizationRepository.deleteByOrganizationCode(organizationCode);
+
+        return OrganizationMapper.mapToOrganizationDto(organization);
+    }
+    @Override
+    public OrganizationDto updateOrganizationByCode(String organizationCode,OrganizationDto organizationDto) throws Exception{
+        // convert organization dto to organization jpa entity
+        Organization organization = OrganizationMapper.mapToOrganization(organizationDto);
+        Organization organizationDB = organizationRepository.findByOrganizationCode(organizationCode);
+        if (organizationDB == null) {
+            throw new Exception("organization does not exist");
+        }
+
+        organizationDB.setOrganizationName(organization.getOrganizationName());
+        organizationDB.setOrganizationDescription(organization.getOrganizationDescription());
+
+        Organization savedOrganization = organizationRepository.save(organizationDB);
+
+        return OrganizationMapper.mapToOrganizationDto(savedOrganization);
     }
 }
