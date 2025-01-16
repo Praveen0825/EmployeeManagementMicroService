@@ -26,7 +26,7 @@ public class EmployeeController {
         EmployeeDto updatedEmployee = employeeService.updateEmployeeById(employeeId,employeeDto);
         return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
     }
-    @GetMapping("{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<EmployeeDto> deleteEmployee(@PathVariable("id") Long employeeId) throws Exception{
         EmployeeDto deletedEmployee = employeeService.deleteEmployeeById(employeeId);
         return new ResponseEntity<>(deletedEmployee, HttpStatus.OK);
